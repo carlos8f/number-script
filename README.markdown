@@ -115,11 +115,10 @@ Usage: number-script [options] path/to/script.number
   -d, --decompile    decompile JavaScript back to NumberScript
   -i, --interactive  run an interactive NumberScript REPL
   -o, --output       set a file to output to ("-" goes to stdout)
+  -b, --base         specifies the base to use for the code, defaults to 10
   -v, --version      display NumberScript version
   -h, --help         display this message
 
-  -b, --base         specifies the base to use for the code, defaults to 10
-  
 ```
 
 license
