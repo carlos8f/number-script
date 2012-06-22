@@ -14,18 +14,15 @@ if (argv.v || argv.version) {
     var v = require('../package.json').version;
     return console.log('NumberScript version ' + v);
 }
-var outfile = argv.o || argv.output;
 
-var base;
-if (argv.b || argv.base) {
-    base = argv.b || argv.base;
-}
+var outfile = argv.o || argv.output;
+var base = argv.b || argv.base || 10;
 
 if (argv.d || argv.decompile) {
     var file = argv.d || argv.decompile;
     readFile(file, function (err, src) {
         if (err) console.error(err)
-        else number.decompile(src, function (err, n) {
+        else number.decompile(src, base, function (err, n) {
             if (err) console.error(err)
             else writeFile(outfile, n + '\n')
         });
@@ -37,10 +34,10 @@ if (argv.c || argv.compile) {
     var file = argv.c || argv.compile;
     readFile(file, function (err, src) {
         if (err) console.error(err)
-        else number.compile(src, function (err, c) {
+        else number.compile(src, base, function (err, c) {
             if (err) console.error(err)
             else writeFile(outfile, c)
-        }, base);
+        });
     });
     return;
 }
@@ -59,9 +56,9 @@ if (argv.r || argv.run || argv._[0]) {
     };
     readFile(file, function (err, src) {
         if (err) console.error(err)
-        else number.run(src, ctx, function (err) {
+        else number.run(src, base, ctx, function (err) {
             if (err) console.error(err)
-        }, base);
+        });
     });
     return;
 }
@@ -74,7 +71,7 @@ if (true || argv.i || argv.interactive) {
     };
     repl.start('> ', null, function (cmd, _, _, cb) {
         var n = cmd.replace(/^\(|\)$/g, '');
-        number.run(n, cb, null, base);
+        number.run(n, base, cb);
     });
 }
 

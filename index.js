@@ -1,16 +1,26 @@
 // This is all so dreadfully ugly,
 // it should be all be rewritten in numberscript at some point.
 
-var bignum = require('bignum');
+var bigint = require('bigint');
 var vm = require('vm');
 
 exports = module.exports = run;
 exports.run = run;
-function run (n, ctx, cb, base) {
+function run (n, base, ctx, cb) {
+    if (typeof base === 'object') {
+        ctx = base;
+        cb = ctx;
+    }
+    if (typeof base === 'function') {
+        cb = base;
+        ctx = {};
+        base = 10;
+    }
     if (typeof ctx === 'function') {
         cb = ctx;
         ctx = {};
     }
+    
     compile(n, function (err, src) {
         if (err) return cb(err)
         try {
@@ -22,7 +32,12 @@ function run (n, ctx, cb, base) {
 }
 
 exports.compile = compile;
-function compile (n, cb, base) {
+function compile (n, base, cb) {
+    if (typeof base === 'function') {
+        cb = base;
+        base = 10;
+    }
+    
     var js;
     if (Buffer.isBuffer(n)) {
         var xs = [];
@@ -32,10 +47,10 @@ function compile (n, cb, base) {
             }
         }
         var buf = new Buffer(xs);
-        js = String(bignum.fromBuffer(buf).toBuffer());
+        js = String(bigint.fromBuffer(buf).toBuffer());
     }
     else if (typeof n === 'string') {
-        js = String(bignum(n.replace(/\s+/g, ''), base).toBuffer());
+        js = String(bigint(n.replace(/\s+/g, ''), base).toBuffer());
     }
     else if (n && typeof n === 'object' && n.toBuffer) {
         js = String(n.toBuffer());
@@ -51,7 +66,11 @@ function compile (n, cb, base) {
 }
 
 exports.decompile = decompile;
-function decompile (src, cb) {
+function decompile (src, base, cb) {
+    if (typeof base === 'function') {
+        cb = base;
+        base = 10;
+    }
     var buf = Buffer.isBuffer(src) ? buf : new Buffer(src);
-    cb(null, String(bignum.fromBuffer(buf)));
+    cb(null, bigint.fromBuffer(buf).toString(base));
 }
