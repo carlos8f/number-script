@@ -26,8 +26,7 @@ language.
 * No semicolons
 * No significant whitespace
 * No operators or any sort (unreadable line noise otherwise)
-* [Hindu-arabic](https://en.wikipedia.org/wiki/Hindu-Arabic_numeral_system)
-base 10 numerals only. All other bases are completely inferior.
+* Only use digits.
 
 Just install the number-script package from [npm](http://npmjs.org):
 
