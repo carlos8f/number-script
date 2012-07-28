@@ -61,7 +61,7 @@ if (argv.r || argv.run || argv._[0]) {
     return;
 }
 
-if (true || argv.i || argv.interactive) {
+if (process.stdin.isTTY || argv.i || argv.interactive) {
     var ctx = {
         require : require,
         console : console,
@@ -71,6 +71,24 @@ if (true || argv.i || argv.interactive) {
         var n = cmd.replace(/^\(|\)$/g, '');
         number.run(n, cb);
     });
+}
+else {
+    var data = '';
+    var ctx = {
+        require : function (name) {
+            if (name === 'number-script') return number
+            else return require(name)
+        },
+        console : console,
+        process : process,
+    };
+    process.stdin.on('data', function (buf) { data += buf });
+    process.stdin.on('end', function () {
+        number.run(data, ctx, function (err, res) {
+            if (err) console.error(err);
+        });
+    });
+    process.stdin.resume();
 }
 
 function readFile (file, cb) {
